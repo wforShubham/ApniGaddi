@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const path = require('path');  // <-- added missing path import
+const path = require('path');
 const bookingRoutes = require('./routes/bookings');
 
 // Load environment variables
@@ -37,13 +37,15 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/booking-a
 .then(() => console.log('✅ MongoDB Connected'))
 .catch(err => console.log('❌ MongoDB Connection Error:', err));
 
-// Routes
+// API Routes
 app.use('/api/bookings', bookingRoutes);
 
 // Serve static assets if in production
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('client/build'));
-  
+  // Serve React build folder
+  app.use(express.static(path.join(__dirname, 'client', 'build')));
+
+  // Handle React routing, return index.html for all unknown routes
   app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
   });
