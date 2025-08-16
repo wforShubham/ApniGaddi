@@ -158,7 +158,7 @@ const BookingForm = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('https://apnigaddi.onrender.com', formData);
+      const response = await axios.post('https://apnigaddi.onrender.com/api/bookings', formData);
       
       setBookingDetails(response.data.booking);
       setShowSuccessModal(true);
