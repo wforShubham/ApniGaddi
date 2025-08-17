@@ -10,9 +10,21 @@ dotenv.config();
 
 const app = express();
 
-// Middleware
+// ✅ Allowed origins (frontend local + Render prod)
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://apnigaddi-1.onrender.com"
+];
+
+// ✅ Middleware
 app.use(cors({
-  origin: ["http://localhost:3000", "https://apnigaddi-1.onrender.com"], // allow dev + prod
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
@@ -20,7 +32,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Add request logging middleware
+// ✅ Request logging
 app.use((req, res, next) => {
   console.log(`📥 ${new Date().toISOString()} - ${req.method} ${req.path}`);
   if (req.method === 'POST' && req.path === '/api/bookings') {
@@ -29,7 +41,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// MongoDB Connection
+// ✅ MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/booking-app', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -37,15 +49,15 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/booking-a
 .then(() => console.log('✅ MongoDB Connected'))
 .catch(err => console.log('❌ MongoDB Connection Error:', err));
 
-// API Routes
+// ✅ API Routes
 app.use('/api/bookings', bookingRoutes);
 
-// Ping route (for waking backend)
+// ✅ Ping route (for waking backend)
 app.get('/api/ping', (req, res) => {
   res.send('pong 🏓');
 });
 
-// Serve static assets if in production
+// ✅ Serve static assets if in production
 if (process.env.NODE_ENV === 'production') {
   const buildPath = path.join(__dirname, 'client', 'build');
   app.use(express.static(buildPath));
