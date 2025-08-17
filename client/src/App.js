@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import BookingForm from './components/BookingForm';
@@ -16,6 +16,8 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/book/:vehicleType" element={<BookingForm />} />
+            {/* Optional fallback route for invalid paths */}
+            <Route path="*" element={<h2>Page Not Found</h2>} />
           </Routes>
         </main>
         <ToastContainer
@@ -34,4 +36,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;
