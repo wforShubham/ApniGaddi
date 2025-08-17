@@ -12,7 +12,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: "https://apnigaddi-1.onrender.com",  // allow only your frontend
+  origin: ["http://localhost:3000", "https://apnigaddi-1.onrender.com"], // allow dev + prod
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
@@ -40,14 +40,22 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/booking-a
 // API Routes
 app.use('/api/bookings', bookingRoutes);
 
+// Ping route (for waking backend)
+app.get('/api/ping', (req, res) => {
+  res.send('pong 🏓');
+});
+
 // Serve static assets if in production
 if (process.env.NODE_ENV === 'production') {
-  // Serve React build folder
-  app.use(express.static(path.join(__dirname, 'client', 'build')));
+  const buildPath = path.join(__dirname, 'client', 'build');
+  app.use(express.static(buildPath));
 
-  // Handle React routing, return index.html for all unknown routes
+  // Catch-all: return index.html for non-API routes
   app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+    if (req.path.startsWith('/api')) {
+      return res.status(404).json({ error: 'API route not found' });
+    }
+    res.sendFile(path.join(buildPath, 'index.html'));
   });
 }
 
