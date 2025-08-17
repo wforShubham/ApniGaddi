@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -8,6 +8,13 @@ import HomePage from './components/HomePage';
 import './App.css';
 
 function App() {
+  useEffect(() => {
+    // Wake up backend when site loads
+    fetch("https://apnigaddi-backend.onrender.com/api/ping")
+      .then(res => console.log("✅ Backend wake-up:", res.status))
+      .catch(err => console.error("❌ Wake-up failed:", err));
+  }, []);
+
   return (
     <Router>
       <div className="App">
